@@ -1,8 +1,6 @@
 # Arsène DoS Attack Tool
 
-<p>
-    <img src="https://files.catbox.moe/lp2t10.jpg" width="1366" height="701" />
-</p>
+![ScreenShot](/arsenebanner.jpg)
 
 
 Arsène DoS Attack Tool is a powerful and stylish command-line DoS attack tool themed after Arsène from Persona. This tool allows you to perform various types of DoS attacks with ease, complete with a dramatic countdown timer and stylish output.
