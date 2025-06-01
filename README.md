@@ -16,7 +16,7 @@ Arsène DoS Attack Tool is a powerful and stylish command-line DoS attack tool t
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/arsene-dos.git
+   git clone https://github.com/Raptorbytes/arsene-dos.git
    ```
 
 2. Navigate to the project directory:
